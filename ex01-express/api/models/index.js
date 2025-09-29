@@ -1,34 +1,12 @@
-import Sequelize from "sequelize";
+import express from 'express';
 
-import getUserModel from "./user";
-import getMessageModel from "./message";
+const app = express();
+const PORT = 3000;
 
-//POSTGRES_URL
-const sequelize = new Sequelize(process.env.POSTGRES_URL, {
-  dialect: "postgres",
-  protocol: "postgres",
-  // logging: false, // Disable SQL query logging
-  dialectOptions: {
-    // Necessary for SSL on NeonDB, Render.com and other providers
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-  dialectModule: require("pg"),
+app.get('/', (req, res) => {
+  res.send('Servidor rodando!');
 });
 
-const models = {
-  User: getUserModel(sequelize, Sequelize),
-  Message: getMessageModel(sequelize, Sequelize),
-};
-
-Object.keys(models).forEach((key) => {
-  if ("associate" in models[key]) {
-    models[key].associate(models);
-  }
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
-
-export { sequelize };
-
-export default models;

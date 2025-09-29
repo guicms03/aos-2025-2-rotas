@@ -1,36 +1,65 @@
-import { v4 as uuidv4 } from "uuid";
-import { Router } from "express";
+// routes/message.js
+const express = require('express');
+const router = express.Router();
+const Message = require('../models/Message');
+const User = require('../models/User');
 
-const router = Router();
-
-router.get("/", (req, res) => {
-  return res.send(Object.values(req.context.models.messages));
+// Create message
+router.post('/', async (req, res) => {
+  try {
+    const message = await Message.create(req.body);
+    res.status(201).json(message); // 201 Created
+  } catch (error) {
+    console.error('Erro ao criar mensagem:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' }); // 500
+  }
 });
 
-router.get("/:messageId", (req, res) => {
-  return res.send(req.context.models.messages[req.params.messageId]);
+// Get all messages
+router.get('/', async (req, res) => {
+  try {
+    const messages = await Message.findAll({ include: User });
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar mensagens' });
+  }
 });
 
-router.post("/", (req, res) => {
-  const id = uuidv4();
-  const message = {
-    id,
-    text: req.body.text,
-    userId: req.context.me.id,
-  };
-
-  req.context.models.messages[id] = message;
-
-  return res.send(message);
+// Get message by id
+router.get('/:id', async (req, res) => {
+  try {
+    const message = await Message.findByPk(req.params.id, { include: User });
+    if (message) return res.json(message);
+    res.status(404).json({ error: 'Mensagem não encontrada' }); // 404
+  } catch (error) {
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 });
 
-router.delete("/:messageId", (req, res) => {
-  const { [req.params.messageId]: message, ...otherMessages } =
-    req.context.models.messages;
+// Update message
+router.put('/:id', async (req, res) => {
+  try {
+    const message = await Message.findByPk(req.params.id);
+    if (!message) return res.status(404).json({ error: 'Mensagem não encontrada' });
 
-  req.context.models.messages = otherMessages;
-
-  return res.send(message);
+    await message.update(req.body);
+    res.json(message);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar mensagem' });
+  }
 });
 
-export default router;
+// Delete message
+router.delete('/:id', async (req, res) => {
+  try {
+    const message = await Message.findByPk(req.params.id);
+    if (!message) return res.status(404).json({ error: 'Mensagem não encontrada' });
+
+    await message.destroy();
+    res.status(204).send(); // 204 No Content
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao deletar mensagem' });
+  }
+});
+
+module.exports = router;
