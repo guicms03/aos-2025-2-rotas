@@ -2,8 +2,8 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 
-import models, { sequelize } from "./models";
-import routes from "./routes";
+import models, { sequelize } from "./models/index.js";
+import routes from "./routes/index.js";
 
 const app = express();
 app.set("trust proxy", true);
@@ -33,8 +33,8 @@ app.use(async (req, res, next) => {
   next();
 });
 
-app.use("/", routes.root);
-app.use("/session", routes.session);
+
+
 app.use("/users", routes.user);
 app.use("/messages", routes.message);
 

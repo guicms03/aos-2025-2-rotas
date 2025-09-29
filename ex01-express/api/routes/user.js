@@ -1,7 +1,7 @@
 // routes/user.js
-const express = require('express');
-const router = express.Router();
-const User = require('../models/User');
+import express from'express';
+const router= express.Router();
+import User from'../models/user.js';
 
 // Create user
 router.post('/', async (req, res) => {
@@ -61,4 +61,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router
