@@ -1,12 +1,12 @@
 // routes/user.js
 import express from'express';
 const router= express.Router();
-import User from'../models/user.js';
+import models from "../models/index.js"
 
 // Create user
 router.post('/', async (req, res) => {
   try {
-    const user = await User.create(req.body);
+    const user = await models.User.create(req.body);
     res.status(201).json(user); // 201 Created
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 // Get all users
 router.get('/', async (req, res) => {
   try {
-    const users = await User.findAll();
+    const users = await models.User.findAll();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar usuários' });
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 // Get user by id
 router.get('/:id', async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await models.User.findByPk(req.params.id);
     if (user) return res.json(user);
     res.status(404).json({ error: 'Usuário não encontrado' }); // 404
   } catch (error) {
@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 // Update user
 router.put('/:id', async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await models.User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
 
     await user.update(req.body);
@@ -51,7 +51,7 @@ router.put('/:id', async (req, res) => {
 // Delete user
 router.delete('/:id', async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await models.User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
 
     await user.destroy();
