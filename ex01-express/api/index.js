@@ -37,6 +37,8 @@ app.use(async (req, res, next) => {
 
 app.use("/users", routes.user);
 app.use("/messages", routes.message);
+app.use("/tarefas", routes.tarefa);
+
 
 const port = process.env.PORT ?? 3000;
 
